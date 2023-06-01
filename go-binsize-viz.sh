@@ -75,15 +75,17 @@ main_getopts() {
 
 generate_data_file() {
 	printf "$(date "+%F %H:%M:%S") ${GREEN} %s${RESET}\n" "running go tool on ${binary}"
-	go tool nm -size "${binary}" | c++filt >${tmpdir}/symtab.txt 2>&1
-	python3 ./tab2pydic.py ${tmpdir}/symtab.txt >${tmpdir}/out.py 2>&1
-	python3 ./simplify.py ${tmpdir}/out.py >${tmpdir}/data.js 2>&1
+	go tool nm -size "${binary}" | c++filt >${tmpdir}/symtab.txt
+	python3 ./tab2pydic.py ${tmpdir}/symtab.txt >${tmpdir}/out.py
+	python3 ./simplify.py ${tmpdir}/out.py >${tmpdir}/data.js
 }
 
 copy_resources() {
 	printf "$(date "+%F %H:%M:%S") ${GREEN} %s${RESET}\n" "copy resources to ${tmpdir}"
-	cp -r ./js ${tmpdir}/app3.js
-	cp -r ./app3.js ${tmpdir}/app3.js
+	cp -r ./js ${tmpdir}/js
+	cp ./app3.js ${tmpdir}/app3.js
+	cp ./treemap_v3.html ${tmpdir}/treemap_v3.html
+	cp ./treemap.css ${tmpdir}/treemap.css
 }
 
 check_and_exist() {
@@ -109,5 +111,6 @@ check_and_exist "$?" "could not copy resource files"
 {
 	printf "$(date "+%F %H:%M:%S") ${GREEN} %s${RESET}\n" "starting http.server in ${tmpdir}"
 	cd ${tmpdir}
+	sleep 2 && open http://localhost:8000/treemap_v3.html &
 	python3 -m http.server
 }
